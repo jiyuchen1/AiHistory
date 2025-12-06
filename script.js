@@ -83,6 +83,35 @@ class DialogueManager {
     }
 
     /**
+     * 复制对话的原始markdown格式内容到剪贴板
+     * @param {string} id - 要复制的对话ID
+     */
+    copyDialogue(id) {
+        const dialogue = this.dialogues.find(d => d.id === id);
+        if (!dialogue) {
+            this.showMessage('找不到对话内容', 'error');
+            return;
+        }
+        
+        // 构建要复制的内容
+        let content = '';
+        if (dialogue.think) {
+            content += `思考逻辑：\n${dialogue.think}\n\n`;
+        }
+        content += dialogue.dialogue;
+        
+        // 复制到剪贴板
+        navigator.clipboard.writeText(content)
+            .then(() => {
+                this.showMessage('对话内容已复制到剪贴板', 'success');
+            })
+            .catch(err => {
+                console.error('复制失败:', err);
+                this.showMessage('复制失败，请手动复制', 'error');
+            });
+    }
+
+    /**
      * 渲染所有对话到页面
      */
     renderDialogues() {
@@ -113,6 +142,9 @@ class DialogueManager {
                             </span>
                         </div>
                         <div class="dialogue-time">${dialogue.timestamp}</div>
+                        <button class="copy-btn" onclick="dialogueManager.copyDialogue('${dialogue.id}')" title="复制原始markdown">
+                            📋
+                        </button>
                     </div>
                     <div class="dialogue-content">
                         ${dialogue.think ? `

@@ -185,6 +185,29 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    position: relative;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    color: #6c757d;
+    margin-left: 10px;
+}
+
+.copy-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+    transform: scale(1.1);
+}
+
+.copy-btn:active {
+    transform: scale(0.95);
 }
 
 .dialogue-role {
