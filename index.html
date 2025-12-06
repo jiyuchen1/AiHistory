@@ -8,6 +8,19 @@
 </head>
 <body>
     <div class="container">
+        <!-- 左上角夜间模式切换 -->
+        <div class="theme-toggle-container">
+            <button id="themeToggle" class="theme-toggle-btn" title="切换主题">
+                <span class="theme-icon">🌞</span>
+            </button>
+            <div class="auto-theme-toggle">
+                <label class="auto-theme-label">
+                    <input type="checkbox" id="autoThemeToggle" checked>
+                    <span class="auto-theme-text">跟随系统</span>
+                </label>
+            </div>
+        </div>
+
         <!-- 右上角悬浮按钮区域 -->
         <div class="floating-actions">
             <button id="addBtn" class="floating-btn floating-btn-primary" title="添加对话">
@@ -26,7 +39,7 @@
                 <span class="btn-icon">🗑️</span>
                 <span class="btn-text">清空</span>
             </button>
-            <input type="file" id="file-input" accept=".json" style="display: none;">
+            <input type="file" id="file-input" style="display: none;">
         </div>
 
         <!-- 添加对话的弹出窗口 -->

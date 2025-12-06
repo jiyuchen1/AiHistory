@@ -12,6 +12,7 @@ class DialogueManager {
     constructor() {
         this.storageKey = 'ai_dialogues';
         this.dialogues = this.loadDialogues();
+        this.initTheme();
         this.initEventListeners();
         this.renderDialogues();
     }
@@ -250,6 +251,70 @@ class DialogueManager {
     }
 
     /**
+     * 初始化主题设置
+     */
+    initTheme() {
+        // 获取本地存储的主题设置
+        const savedTheme = localStorage.getItem('theme');
+        const autoThemeEnabled = localStorage.getItem('autoTheme') === 'true' || localStorage.getItem('autoTheme') === null;
+        
+        // 设置自动主题开关状态
+        const autoThemeToggle = document.getElementById('autoThemeToggle');
+        if (autoThemeToggle) {
+            autoThemeToggle.checked = autoThemeEnabled;
+        }
+        
+        // 检查系统主题
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // 应用主题
+        if (autoThemeEnabled) {
+            this.setTheme(isDarkMode ? 'dark' : 'light');
+        } else if (savedTheme) {
+            this.setTheme(savedTheme);
+        }
+        
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (autoThemeEnabled) {
+                this.setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+    }
+
+    /**
+     * 设置主题
+     * @param {string} theme - 主题名称：'light' 或 'dark'
+     */
+    setTheme(theme) {
+        const body = document.body;
+        const themeIcon = document.querySelector('.theme-icon');
+        
+        if (theme === 'dark') {
+            body.classList.add('dark-theme');
+            if (themeIcon) {
+                themeIcon.textContent = '🌙';
+            }
+        } else {
+            body.classList.remove('dark-theme');
+            if (themeIcon) {
+                themeIcon.textContent = '🌞';
+            }
+        }
+        
+        // 保存主题设置到本地存储
+        localStorage.setItem('theme', theme);
+    }
+
+    /**
+     * 切换主题
+     */
+    toggleTheme() {
+        const isDark = document.body.classList.contains('dark-theme');
+        this.setTheme(isDark ? 'light' : 'dark');
+    }
+
+    /**
      * 初始化所有事件监听器
      */
     initEventListeners() {
@@ -266,6 +331,10 @@ class DialogueManager {
         const confirmAddBtn = document.getElementById('confirmAddBtn');
         const modalThinkInputGroup = document.getElementById('modalThinkInputGroup');
         const roleButtons = document.querySelectorAll('.role-btn');
+        
+        // 主题切换相关元素
+        const themeToggle = document.getElementById('themeToggle');
+        const autoThemeToggle = document.getElementById('autoThemeToggle');
 
         // 添加按钮点击事件 - 打开模态窗口
         addBtn.addEventListener('click', () => {
@@ -327,6 +396,27 @@ class DialogueManager {
         clearBtn.addEventListener('click', () => {
             this.clearAllData();
         });
+
+        // 主题切换按钮点击事件
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
+
+        // 自动主题切换开关变化事件
+        if (autoThemeToggle) {
+            autoThemeToggle.addEventListener('change', (e) => {
+                const isAuto = e.target.checked;
+                localStorage.setItem('autoTheme', isAuto);
+                
+                // 如果开启自动主题，立即应用系统主题
+                if (isAuto) {
+                    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    this.setTheme(isDarkMode ? 'dark' : 'light');
+                }
+            });
+        }
 
         // 初始化模态窗口角色状态
         this.updateThinkInputVisibility('user');
