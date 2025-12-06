@@ -118,11 +118,11 @@ class DialogueManager {
                         ${dialogue.think ? `
                         <div class="think-text">
                             <strong>思考逻辑：</strong>
-                            <p>${this.escapeHtml(dialogue.think)}</p>
+                            <p>${this.formatContent(dialogue.think)}</p>
                         </div>
                         ` : ''}
                         <div class="dialogue-text">
-                            <p>${this.escapeHtml(dialogue.dialogue)}</p>
+                            <p>${this.formatContent(dialogue.dialogue)}</p>
                         </div>
                     </div>
                     <div class="dialogue-actions">
@@ -144,6 +144,40 @@ class DialogueManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * 格式化内容，处理换行和基本markdown格式
+     * @param {string} text - 需要格式化的文本
+     * @returns {string} 格式化后的HTML文本
+     */
+    formatContent(text) {
+        if (!text) return '';
+        
+        // 1. 首先进行HTML转义，防止XSS攻击
+        let formatted = this.escapeHtml(text);
+        
+        // 2. 处理基本markdown格式（在处理换行符之前）
+        // 标题 # H1, ## H2, ### H3, #### H4, ##### H5, ###### H6
+        formatted = formatted.replace(/^###### (.*?)$/gm, '<h6>$1</h6>');
+        formatted = formatted.replace(/^##### (.*?)$/gm, '<h5>$1</h5>');
+        formatted = formatted.replace(/^#### (.*?)$/gm, '<h4>$1</h4>');
+        formatted = formatted.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+        formatted = formatted.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
+        formatted = formatted.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+        // 粗体 **text**
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // 斜体 *text*
+        formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        // 无序列表：- item, * item, + item
+        formatted = formatted.replace(/^(?:-|\*|\+) (.*?)$/gm, '<li>$1</li>');
+        // 包裹列表项到ul标签
+        formatted = formatted.replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>');
+        
+        // 3. 最后处理换行符
+        formatted = formatted.replace(/\n/g, '<br>');
+        
+        return formatted;
     }
 
     /**
